@@ -1,0 +1,61 @@
+{
+  "name": "aiveed-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the AIVeed API: generate AI videos, images and audio from Claude, Cursor, VS Code and other MCP clients.",
+  "mcpName": "io.github.AIVeed-io/aiveed-mcp",
+  "license": "MIT",
+  "author": "AIVeed <support@aiveed.io>",
+  "homepage": "https://github.com/AIVeed-io/aiveed-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIVeed-io/aiveed-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AIVeed-io/aiveed-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "aiveed",
+    "ai-video",
+    "video-generation",
+    "image-generation",
+    "text-to-video"
+  ],
+  "type": "module",
+  "bin": {
+    "aiveed-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "leak-scan": "node scripts/leak-scan.mjs",
+    "prepublishOnly": "node scripts/guard-publish.mjs",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,75 @@
+# Publishes aiveed-mcp to npm when a GitHub release is published. Releases are made by a person,
+# from the current tip of main (see RELEASING.md).
+#
+# Two jobs, so no third-party code ever runs next to a publishing credential:
+#   build   - no secrets, no id-token: installs, tests, builds, scans and packs the tarball.
+#   publish - the `npm-publish` environment (required reviewer), id-token for npm trusted
+#             publishing and provenance: installs nothing, runs no package scripts, and publishes
+#             exactly the tarball the build job made.
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: The tag is v<package version> and is the current tip of main
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          [ "$TAG" = "v$v" ] || { echo "release tag $TAG does not match package version $v"; exit 1; }
+          [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "$TAG is not the tip of main"; exit 1; }
+      - run: npm ci --ignore-scripts
+      - run: npm audit --omit=dev --audit-level=low
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: node scripts/leak-scan.mjs
+      - run: node scripts/leak-scan.mjs --history
+      - run: node scripts/leak-scan.mjs --pack
+      - run: npm pack --ignore-scripts
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tarball
+          path: aiveed-mcp-*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing and provenance
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@11.21.1 --ignore-scripts # trusted publishing needs npm 11.5+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tarball
+      - run: npm publish ./aiveed-mcp-*.tgz --access public --provenance --ignore-scripts
+        env:
+          # Empty once trusted publishing is set up (the normal case). Only for the very first
+          # release, if npm needs the package to exist before a trusted publisher can be added:
+          # a short-lived granular token, stored in the npm-publish environment, deleted after.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.AIVeed-io/aiveed-mcp",
+  "title": "AIVeed",
+  "description": "Generate AI videos, images and audio (Veo 3.1, Seedance, Kling and more) with AIVeed credits.",
+  "repository": { "url": "https://github.com/AIVeed-io/aiveed-mcp", "source": "github" },
+  "websiteUrl": "https://aiveed.io",
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "aiveed-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "AIVEED_API_KEY",
+          "description": "Your AIVeed API key (aiv_sk_...), from https://developer.aiveed.io/keys",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "AIVEED_MCP_UPLOAD_DIRS",
+          "description": "Comma-separated folders upload_media may read (it is off until set), e.g. ~/Videos/aiveed-inputs",
+          "isRequired": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
