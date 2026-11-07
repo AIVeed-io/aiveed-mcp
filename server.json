@@ -5,12 +5,12 @@
   "description": "Generate AI videos, images and audio (Veo 3.1, Seedance, Kling and more) with AIVeed credits.",
   "repository": { "url": "https://github.com/AIVeed-io/aiveed-mcp", "source": "github" },
   "websiteUrl": "https://aiveed.io",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "aiveed-mcp",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {

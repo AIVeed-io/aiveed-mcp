@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { AiveedClient } from './client.js';
 import { registerTools, type ToolOptions } from './tools.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.1.1';
 
 const INSTRUCTIONS = `AIVeed generates AI videos, images and audio from many models (Veo 3.1, Seedance, Kling, Wan, Grok Imagine, GPT Image, Nano Banana and more), paid in credits.
 Typical flow: list_models (pick a model and valid options, note the credit cost) -> tell the user the cost -> generate_video / generate_image / generate_audio -> get_job with wait_seconds until completed -> share result_url.

@@ -25,7 +25,8 @@ key never charges twice. Failed jobs are refunded automatically.
 
 ## Setup
 
-Create an API key at <https://developer.aiveed.io/keys>. Node.js 20 or newer is required.
+Create an API key at <https://developer.aiveed.io/keys>. Node.js 20 or newer is required. Step-by-step
+setup for each client: <https://api.aiveed.io/docs/mcp>.
 
 **Claude Code**
 
@@ -33,7 +34,7 @@ Create an API key at <https://developer.aiveed.io/keys>. Node.js 20 or newer is 
 claude mcp add aiveed -e AIVEED_API_KEY=aiv_sk_... -- npx -y aiveed-mcp
 ```
 
-**Claude Desktop, Cursor, VS Code** (the client's MCP config):
+**Claude Desktop and Cursor** (`claude_desktop_config.json`, `~/.cursor/mcp.json`):
 
 ```json
 {
@@ -47,7 +48,22 @@ claude mcp add aiveed -e AIVEED_API_KEY=aiv_sk_... -- npx -y aiveed-mcp
 }
 ```
 
-Pin a version (`aiveed-mcp@0.1.0`) if you prefer upgrades to be deliberate.
+**VS Code** (`.vscode/mcp.json`, or **MCP: Add Server** in the command palette):
+
+```json
+{
+  "servers": {
+    "aiveed": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "aiveed-mcp"],
+      "env": { "AIVEED_API_KEY": "aiv_sk_..." }
+    }
+  }
+}
+```
+
+Pin a version (`aiveed-mcp@0.1.1`) if you prefer upgrades to be deliberate.
 
 ### Local files
 

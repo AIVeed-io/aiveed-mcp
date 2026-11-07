@@ -1,6 +1,6 @@
 {
   "name": "aiveed-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for the AIVeed API: generate AI videos, images and audio from Claude, Cursor, VS Code and other MCP clients.",
   "mcpName": "io.github.AIVeed-io/aiveed-mcp",
   "license": "MIT",
