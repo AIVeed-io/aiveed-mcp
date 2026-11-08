@@ -7,8 +7,20 @@ are built from. Both branches are protected; changes reach them by pull request.
 
 1. On `development`, bump the version in `package.json`, `server.json` (both `version` fields) and
    `src/server.ts` (`VERSION`), and run `npm install --package-lock-only`. CI checks the three agree.
-2. Open a pull request `development` -> `main`. Merge it once CI passes and a reviewer has read
-   the diff.
+2. Open a pull request `development` -> `main` for review and CI. **Do not merge it with the GitHub
+   merge button.** Every merge method (merge commit, squash, rebase) re-creates commits with the
+   merging account as committer, which puts a personal identity into the public history; the
+   Publish workflow's history scan then refuses the release. Instead, once CI passes and a reviewer
+   has read the diff, an admin fast-forwards `main` to the reviewed commit:
+
+   ```sh
+   git fetch origin
+   gh api -X PATCH repos/AIVeed-io/aiveed-mcp/git/refs/heads/main \
+     -f sha="$(git rev-parse origin/development)" -F force=false
+   ```
+
+   Without `force`, GitHub accepts only a fast-forward, so `main` gets exactly the reviewed commits.
+   The pull request then shows as merged.
 3. Create a GitHub release with tag `v<version>` on the tip of `main`. The Publish workflow checks
    the tag, builds, tests and scans the tarball in a job without credentials, then, once a reviewer
    approves the `npm-publish` environment, publishes that tarball with provenance.
@@ -21,7 +33,9 @@ A published npm version cannot be replaced. If a release is wrong, deprecate it
 ## One-time setup (repository and npm owners)
 
 - **GitHub:** protect `main` and `development` (pull request with an approving review, CI passing,
-  no force pushes, no deletions); restrict who can create `v*` tags and releases; create the
+  no force pushes, no deletions), with repository admins allowed to bypass the `main` rules
+  *always* (not only through pull requests) so they can fast-forward it (step 2 of each release);
+  restrict who can create `v*` tags and releases; create the
   `npm-publish` environment with required reviewers and a deployment rule for `v*` tags only;
   enable secret scanning and push protection.
 - **npm:** add a trusted publisher for this package (repository `AIVeed-io/aiveed-mcp`, workflow
